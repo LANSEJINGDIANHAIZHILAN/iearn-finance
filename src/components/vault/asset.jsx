@@ -7,6 +7,8 @@ import {
   Button
 } from '@material-ui/core';
 
+import WarningIcon from '@material-ui/icons/Warning';
+
 import {
   ERROR,
   DEPOSIT_VAULT,
@@ -351,6 +353,14 @@ class Asset extends Component {
                 <Typography variant='h4'>Deposits are currently disabled for this vault</Typography>
               </div>
             }
+            { asset.symbol === 'DAI' &&
+              <div className={classes.disabledContainer}>
+                <Typography variant='h4'>
+                  <WarningIcon fontSize="small" style={{ marginBottom: '-5px' }} />
+                  Withdrawals might be subject to high slippage due to recent large <a style={{ color: '#000' }} target="_blank" href="https://etherscan.io/tx/0x7207d444430344d4d8384d4dd8c12a8a343c9c01ccdb17c8962b84f40955c59f">withdrawal</a>
+                </Typography>
+              </div>
+            }
           </div>
           <div className={ classes.sepperator }></div>
           <div className={classes.tradeContainer}>
@@ -437,24 +447,23 @@ class Asset extends Component {
 
   _getAPY = (asset) => {
     const { basedOn } = this.props
+    const initialApy = '0.00'
 
     if(asset && asset.stats) {
       switch (basedOn) {
         case 1:
-          return asset.stats.apyThreeDaySample
+          return asset.stats.apyOneWeekSample || initialApy
         case 2:
-          return asset.stats.apyOneWeekSample
+          return asset.stats.apyOneMonthSample || initialApy
         case 3:
-          return asset.stats.apyOneMonthSample
-        case 4:
-          return asset.stats.apyInceptionSample
+          return asset.stats.apyInceptionSample || initialApy
         default:
           return asset.apy
       }
     } else if (asset.apy) {
       return asset.apy
     } else {
-      return '0.00'
+      return initialApy
     }
   }
 
